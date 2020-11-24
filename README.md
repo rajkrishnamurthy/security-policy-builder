@@ -138,17 +138,14 @@ or
 docker run -it -v "$PWD":/mnt --rm jupiterone/pspbuilder psp publish -c /mnt/config.json -t /mnt/templates -a $J1_ACCOUNT_ID -k $J1_API_TOKEN
 ```
 
-You can optionally add the `--wait` option if you would like to wait for the
-background publishing work to complete. When the `--wait` is used a full report
-of the publish job is printed to the console.
+By default, the `psp publish` command will submit your data to JupiterOne as a
+background job and immediately return. You can optionally add the `--wait`
+option if you would like to wait for the background publishing work to complete.
+When the `--wait` is used, the command polls JupiterOne until the task is
+complete, and a full report of the publish job is printed to the console.
 
-Alternatively, you may use username/password auth by passing the
-`-u $J1_USERNAME` flag instead of `-k`. This will interactively prompt you for
-your JupiterOne password, and should only be used when manually publishing to J1
-when no API token has been created. This will fail if specified with the `-n` or
-`--noninteractive` flags, so we recommend the use of API tokens.
-
-Your JupiterOne user must have administrator privilege to publish the contents.
+Your JupiterOne token must have `Policies:Admin` privilege, or be issued by an
+account Administrator, in order to publish the contents.
 
 ### Publishing policies and procedures to Confluence
 
@@ -230,6 +227,11 @@ docker run -it -v "$PWD":/mnt --rm jupiterone/pspbuilder mkdocs build -f /mnt/mk
 cd site
 aws s3 cp --recursive . s3://mybucket/location
 ```
+
+### Generating a static HTML site from Markdown
+
+We recommend the `mkdocs` tool for this. See above example in "CI/CD" which does
+`mkdocs build`.
 
 ## Advanced Usage
 
@@ -319,7 +321,7 @@ The supported `jupiterone/pspbuilder` docker image has the necessary pandoc
 dependencies installed. You may issue commands like:
 
 ```bash
-docker run -it -v "$PWD":/mnt --rm jupiterone/pspbuilder pandoc /mnt/docs/filename.md -f markdown -t latex --pdf-engine=xelatex --variable monofont="Monaco" -o /mnt/pdf/filename.pdf
+docker run -it -v "$PWD":/mnt --rm jupiterone/pspbuilder-extras pandoc /mnt/docs/filename.md -f markdown -t latex --pdf-engine=xelatex --variable monofont="Monaco" -o /mnt/pdf/filename.pdf
 ```
 
 to convert a single markdown file into a PDF.
@@ -397,7 +399,7 @@ pandoc *.md -f markdown -t latex --latex-engine=xelatex --variable monofont="inc
 Then, issue:
 
 ```bash
-docker run -it -v "$PWD":/mnt --rm jupiterone/pspbuilder /mnt/pdf.sh
+docker run -it -v "$PWD":/mnt --rm jupiterone/pspbuilder-extras /mnt/pdf.sh
 ```
 
 This should stitch together all of your markdown files (in alphabetical order
